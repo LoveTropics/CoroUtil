@@ -2,7 +2,7 @@ plugins {
     id 'idea'
     id 'java-library'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.78'
+    id 'net.neoforged.moddev' version '2.0.115'
     id "com.hypherionmc.modutils.modpublisher" version "2.1.6"
 }
 
@@ -162,7 +162,6 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             minecraft_version_range: minecraft_version_range,
             neo_version            : neo_version,
             neo_version_range      : neo_version_range,
-            loader_version_range   : neo_loader_version_range,
             mod_id                 : mod_id,
             mod_name               : mod_name,
             mod_license            : mod_license,
@@ -180,6 +179,7 @@ processResources {
     exclude("fabric.mod.json")
     exclude("META-INF/mods.toml")
     exclude("${project.mod_id}.accesswidener")
+    exclude("pack.mcmeta") //NeoForge automatically generates this for every mod
 }
 
 
