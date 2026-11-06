@@ -5,32 +5,30 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.awt.image.BufferedImage;
 
 public class CoroUtilColor {
 
+    public static boolean skipColorLookup = false;
 
     public static int[] getColors(BlockState state) {
-        //Unused, but kept for binary compatibility
-//		BlockStateModel model;
-//
-//        //used when foliage shader is on
-////        if (FoliageData.backupBakedModelStore.containsKey(state)) {
-////            model = FoliageData.backupBakedModelStore.get(state);
-////        } else {
-//            model = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getBlockModel(state);
-////        }
-//
-//        //TODO: 1.21.4, see if commenting out /* && !model.isCustomRenderer()*/ matters for weather
-//        if (model != null/* && !model.isCustomRenderer()*/) {
-//            //TODO: this requires a param in forge, but not in fabric, resolve this
-//			TextureAtlasSprite sprite = model.particleIcon(/*net.minecraftforge.client.model.data.ModelData.EMPTY*/);
-//            if (sprite != null && !sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation())) {
-//                return getColors(sprite);
-//            }
-//        }
+        //lil safety net incase something explodes while lt is live - todo: care more
+        if (!skipColorLookup) {
+            try {
+                Material.Baked material = Minecraft.getInstance().getModelManager()
+                        .getBlockStateModelSet().getParticleMaterial(state);
+                TextureAtlasSprite sprite = material.sprite();
+                if (sprite != null && !sprite.contents().name().equals(MissingTextureAtlasSprite.getLocation())) {
+                    return getColors(sprite);
+                }
+            } catch (Exception ex) {
+                skipColorLookup = true;
+                //shh
+            }
+        }
         return IntArrays.EMPTY_ARRAY;
     }
 
